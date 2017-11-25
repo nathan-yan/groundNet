@@ -43,7 +43,7 @@ class GroundNet:
                              strides = [1, 1, 1, 1],
                              padding = "SAME")
 
-            # if this isn't the last layer, ReLU
+            # If this isn't the last layer, ReLU
             if (l != len(self.weights) - 1):
                 X = self.activation(X)
             else:
@@ -64,14 +64,15 @@ def main():
 
     prediction = groundNet.inference(inp)
 
-    # Log-liklihood loss, since we're minimizing the loss, and the log-liklihood is the log of how likely the prediction could be the target if the prediction parameterized a multinoulli distribution. We want to make it negative, so the more likely, the smaller the loss (good!)
+    # Log-liklihood loss
+    # We want to minimize the loss. Log-liklihood is the log of the probability of the prediction being the target if the prediction parameterized a multinoulli distribution. As a result, we want to make that probability negative, so the more likely the prediction is the target, the smaller the loss (good!)
 
     # We're going to take the sum of all of these losses but not across the batchsize axis
     loss = -tf.reduce_mean(tf.reduce_sum(tf.log(prediction) * target +
                     tf.log(1 - prediction) * (1 - target),
                     axis = [1, 2, 3]))
 
-    # an now for my favorite optimizer...
+    # And now for my favorite optimizer...
     train = tf.train.RMSPropOptimizer(1e-3).minimize(loss)
 
     # Quick inference/train test
